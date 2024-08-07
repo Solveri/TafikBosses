@@ -6,22 +6,52 @@ using UnityEngine;
 public class Bricks : MonoBehaviour
 {
     [SerializeField] BrickType brickType;
-    bool isHit = false;
-    public static event Action<Bricks> onDestory;
-
-    private void OnCollisionEnter2D(Collision2D collision)
+    public bool isHit = false;
+    public bool isHitTwice = false;
+    [SerializeField] List<BrickScriptable> chooseableBricks = new List<BrickScriptable>();
+    [SerializeField] List<Material> aviableColors = new List<Material>();
+    BrickScriptable choosenBrick;
+    SpriteRenderer sr;
+    private void Awake()
     {
-        if (collision.gameObject.transform.CompareTag("Ball"))
-        {
+        sr = GetComponent<SpriteRenderer>();
+    }
+    private void Start()
+    {
+
+        choosenBrick = chooseableBricks[UnityEngine.Random.Range(0, chooseableBricks.Count)];
+        var chosenMat = aviableColors[UnityEngine.Random.Range(0, chooseableBricks.Count)];
+        sr.material = chosenMat;
+        sr.sprite = choosenBrick.Brick;
+        onSpawn.Invoke(this);
+    }
+    public static event Action<Bricks> onDestory;
+    public static event Action<Bricks> onSpawn;
+    
+
+    private void Update()
+    {
+        
+    }
+
+    public void BrickHit()
+    {
+       
+            if (GameManager.instance.currentBall.IsUnstoppable)
+            {
+                AnimateBrickDestroy(gameObject, 1f);
+                return;
+            }
             switch (brickType)
             {
                 case BrickType.Normal:
-                    AnimateBrickDestroy(gameObject, 1f);
+                isHit = true;
+                AnimateBrickDestroy(gameObject, 1f);
                     break;
                 case BrickType.DoubleHit:
                     if (!isHit)
                     {
-                        isHit = true;
+                        isHitTwice= true;
                         AnimateBrickHit(gameObject, 0.8f);
                     }
                     else
@@ -37,8 +67,16 @@ public class Bricks : MonoBehaviour
                     break;
                 default:
                     break;
-            }
+            
         }
+    }
+  
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        
+        
+       
     }
 
     private void AnimateBrickDestroy(GameObject brick, float scaleDownFactor)
@@ -68,6 +106,7 @@ public class Bricks : MonoBehaviour
         {
             // Scale down animation (80% of original size)
             LeanTween.scale(brick, brick.transform.localScale * scaleFactor, scaleDownDuration).setEase(LeanTweenType.easeInBack);
+            sr.sprite = choosenBrick.Broken;
         });
     }
 }

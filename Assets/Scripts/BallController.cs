@@ -1,132 +1,193 @@
-using Unity.VisualScripting;
+using System.Collections;
+using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
-public class BallController : MonoBehaviour,IAttackable
+public class BallController : MonoBehaviour, IAttackable
 {
     public float speed = 10f; // Speed of the ball
-    private Rigidbody2D rb;
-    
+    private Vector2 direction = Vector2.up; // Initial direction
+
     bool isBallHitTheMiddle = false;
     bool isBallHitTheSide = false;
     public bool isBallHitThePaddle = false;
     float initSpeed;
-    [SerializeField]private float modifer;
-    float maxSpeed { get => initSpeed * (150/100); }
-    float maxModifer { get => modifer * (150/100); }
-    float minModifier { get => modifer *0.50f; }
-    float minSpeed { get => initSpeed *0.50f; }
-    public static event System.Action onDestroy;
+    [SerializeField] private float modifier;
+    [SerializeField]int AmountOfHits;
+    [SerializeField]SpriteRenderer spriteRenderer;
+    Color originalColor;
+    public bool IsUnstoppable { get { return isUnstoppable; } }
+    float maxSpeed { get => initSpeed * 1.5f; }
+    float maxModifier { get => modifier * 1.5f; }
+    float minModifier { get => modifier * 0.5f; }
+    float minSpeed { get => initSpeed * 0.75f; }
+    public static event System.Action OnDestroy;
     public bool isActive;
-    public float CurrentModifer { get { return modifer; } }
+    public float CurrentModifier { get { return modifier; } }
+    private bool isUnstoppable = false;
+    public bool isLaunched;
+   
 
-
-    private void Awake()
+    private void Start()
     {
-        rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component
-    }
-    void Start()
-    {
-      
-        rb.velocity = Vector2.up * speed; // Initial velocity to start the ball moving
         initSpeed = speed;
         isActive = true;
-
+        originalColor = spriteRenderer.color;
+      
     }
 
-    public void ChangeModifer(float newModifer)
-    {
-        modifer = newModifer;
-    }
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Check if the collision is with the paddle
-        if (collision.gameObject.CompareTag("Paddle"))
-        {
-            isBallHitThePaddle = true;
-            HandlePaddleCollision(collision);
-            ChangeSpeed();
-        }
-        else
-        {
-            isBallHitThePaddle = false;
-        }
-        if (collision.gameObject.CompareTag("Boss"))
-        {
-            Attack(collision.gameObject.GetComponent<IDamageable>());
-        }
-        if (collision.gameObject.CompareTag("Miss"))
-        {
-            DestoryBall();
-        }
-    }
     private void Update()
     {
+        if (!isLaunched)
+            return;
+
         if (speed > maxSpeed)
         {
             speed = maxSpeed;
-
         }
         if (speed < minSpeed)
         {
             speed = minSpeed;
         }
-    }
-    // make a function that changes the modifer to make it more decoupled
-    void ChangeSpeed()
-    {
-        if (isBallHitTheSide)
+
+        // Move the ball
+        transform.position += (Vector3)(direction * speed * Time.deltaTime);
+
+        // Check for collisions
+        //StartCoroutine(CheckColDelay());
+        CheckCollisions();
+        ChangeColor();
+        if (AmountOfHits >= 5)
         {
-            isBallHitTheSide = false;
-            float currentSpeed = speed;
-
-            
-            if (speed < maxSpeed)
-            {
-
-                modifer += 0.25f;
-
-                if (modifer > maxModifer)
-                {
-                    modifer = maxModifer;
-                }
-                speed *= modifer;
-
-                if (speed > maxSpeed)
-                {
-                    speed = maxSpeed;
-                   
-                }
-
-            }
-           
-            Debug.Log("Speed increased from " + currentSpeed + " to " + speed);
-
-        }
-        if (isBallHitTheMiddle)
-        {
-            isBallHitTheMiddle = false;
-            if (speed > minSpeed)
-            {
-             
-                modifer -=0.15f;
-                if(modifer < minModifier)
-                {
-                    modifer = minModifier;
-                }
-                Debug.Log($"modifer is {modifer}");
-                speed *= modifer;
-               
-            }
-           Debug.Log("Speed decreased to " + speed);
-            
+            AmountOfHits = 0;
+            DirectBallToPaddle();
         }
     }
-
-    void HandlePaddleCollision(Collision2D collision)
+   
+    private void ChangeColor()
     {
-        Vector2 paddlePosition = collision.transform.position; // Get the paddle's position
-        Vector2 contactPoint = collision.contacts[0].point; // Get the contact point of the collision
-        float paddleWidth = collision.collider.bounds.size.x; // Get the width of the paddle
+        if (IsUnstoppable)
+        {
+            spriteRenderer.color = Color.red;
+        }
+        else
+        {
+            spriteRenderer.color = originalColor;
+        }
+    }
+    public void Launch(Vector2 initialDirection)
+    {
+        direction = initialDirection.normalized;
+        isLaunched = true;
+    }
+
+    public void ChangeModifier(float newModifier)
+    {
+        modifier = newModifier;
+    }
+
+    public void SetUnstoppable(bool value)
+    {
+        isUnstoppable = value;
+        if (isUnstoppable)
+        {
+            Debug.Log("Ball is now unstoppable");
+        }
+        else
+        {
+            Debug.Log("Ball is no longer unstoppable");
+        }
+    }
+    
+
+    private void CheckCollisions()
+    {
+        // Check for collisions with walls
+        CheckWallCollisions();
+
+        // Check for collisions with paddle
+        CheckPaddleCollisions();
+
+        // Check for collisions with bricks
+        //CheckBrickCollisions();
+    }
+
+    private void CheckWallCollisions()
+    {
+        // Assuming the walls are at x = -screenWidth/2, x = screenWidth/2, y = -screenHeight/2, y = screenHeight/2
+        float screenWidth = Camera.main.orthographicSize * Camera.main.aspect * 2;
+        float screenHeight = Camera.main.orthographicSize * 2;
+
+        if (transform.position.x <= -screenWidth / 2 || transform.position.x >= screenWidth / 2)
+        {
+            direction.x = -direction.x; // Reflect direction horizontally
+            transform.position = new Vector3(
+                Mathf.Clamp(transform.position.x, -screenWidth / 2, screenWidth / 2),
+                transform.position.y,
+                transform.position.z
+            );
+            AmountOfHits++;
+
+        }
+
+        if (transform.position.y >= screenHeight / 2)
+        {
+            direction.y = -direction.y; // Reflect direction vertically
+            transform.position = new Vector3(
+                transform.position.x,
+                Mathf.Clamp(transform.position.y, -screenHeight / 2, screenHeight / 2),
+                transform.position.z
+            );
+            AmountOfHits++;
+        }
+
+        if (transform.position.y <= -screenHeight / 2)
+        {
+            // Ball missed, handle accordingly
+            DestroyBall();
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(transform.position,0.16f);
+    }
+    private void CheckPaddleCollisions()
+    {
+       
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position,0.15f);
+
+        foreach (var hit in hits)
+        {
+            if (hit.CompareTag("Paddle"))
+            {
+                isBallHitThePaddle = true;
+                HandlePaddleCollision(hit);
+                AmountOfHits = 0;
+                break;
+            }
+            if (hit.CompareTag("Brick"))
+            {
+                // maybe add a parameter that takes in the hit aka block and then check if we already hit that block so we dont refaclted twice
+                Debug.Log("Hit1");
+                AmountOfHits = 0;
+                HandleBrickCollision(hit);
+            }
+            else
+            {
+                isBallHitThePaddle = false;
+                
+            }
+        }
+    }
+
+   
+    private void HandlePaddleCollision(Collider2D collider)
+    {
+        Vector2 paddlePosition = collider.transform.position; // Get the paddle's position
+        Vector2 contactPoint = transform.position; // Approximate the contact point using the ball's position
+        float paddleWidth = collider.bounds.size.x; // Get the width of the paddle
 
         // Calculate the hit position relative to the paddle's width (-0.5 to 0.5)
         float hitPosition = (contactPoint.x - paddlePosition.x) / paddleWidth;
@@ -139,7 +200,7 @@ public class BallController : MonoBehaviour,IAttackable
         if (hitPosition < -0.40f)
         {
             // Ball hits the left side of the paddle (135 to 180 degrees)
-            angle = 100 + (hitPosition + 1) * 45;
+            angle = 135 + (hitPosition + 1) * 45;
             isBallHitTheSide = true;
         }
         else if (hitPosition > 0.40f)
@@ -158,18 +219,93 @@ public class BallController : MonoBehaviour,IAttackable
         Debug.Log("Hit Position: " + hitPosition + " Angle: " + angle);
 
         // Convert the angle to a direction vector
-        Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
-        rb.velocity = direction * speed; // Set the new velocity of the ball
+        direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+        ChangeSpeed();
+    }
+    
+    private void HandleBrickCollision(Collider2D collider)
+    {
+        Bricks brick = collider.gameObject.GetComponent<Bricks>();
+        if (!brick.isHit && !isUnstoppable)
+        {
+            Vector2 normal = (transform.position - collider.transform.position).normalized;
+            direction = Vector2.Reflect(direction, normal);
+        }
+        if (isUnstoppable)
+        {
+            brick.BrickHit();
+            return; // Ignore collisions if the ball is unstoppable
+        }
+        else
+        {
+            brick.BrickHit();
+        }
+
+
+      
+        // Reflect the ball's velocity
+       
+
+        
+        
     }
 
-    private void DestoryBall()
+    private void DestroyBall()
     {
-        onDestroy.Invoke();
+        OnDestroy.Invoke();
         Destroy(this.gameObject);
     }
+
     public void Attack(IDamageable target)
     {
         target.TakeDamage(1);
     }
-   
+
+    void ChangeSpeed()
+    {
+        if (isBallHitTheSide)
+        {
+            isBallHitTheSide = false;
+            float currentSpeed = speed;
+
+            if (speed < maxSpeed)
+            {
+                modifier += 0.25f;
+
+                if (modifier >= maxModifier)
+                {
+                    modifier = maxModifier;
+                }
+                speed *= modifier;
+
+                if (speed > maxSpeed)
+                {
+                    speed = maxSpeed;
+                }
+            }
+
+            Debug.Log("Speed increased from " + currentSpeed + " to " + speed);
+        }
+        if (isBallHitTheMiddle)
+        {
+            isBallHitTheMiddle = false;
+            if (speed > minSpeed)
+            {
+                modifier -= 0.15f;
+                if (modifier < minModifier)
+                {
+                    modifier = minModifier;
+                }
+                Debug.Log($"modifier is {modifier}");
+                speed *= modifier;
+            }
+            Debug.Log("Speed decreased to " + speed);
+        }
+    }
+    private void DirectBallToPaddle()
+    {
+        Vector2 directionToPaddle = (GameManager.instance.currentPaddle.transform.position - transform.position).normalized;
+        direction = directionToPaddle;
+        
+    }
 }

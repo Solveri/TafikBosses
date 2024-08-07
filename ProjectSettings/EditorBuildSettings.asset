@@ -9,6 +9,33 @@ EditorBuildSettings:
     path: Assets/Scenes/HomeScreen.unity
     guid: ffa58f18c60f0f54188501189d5db8e5
   - enabled: 1
-    path: Assets/Scenes/Game.unity
+    path: Assets/Scenes/Level1.unity
+    guid: 009671a7ec524664ca765a91f7e1baf4
+  - enabled: 1
+    path: Assets/Scenes/Level2.unity
+    guid: 5a5f99bffa837c249bcd22723c2a19e7
+  - enabled: 1
+    path: Assets/Scenes/Level3.unity
+    guid: 83661704ed752c14d885ccb275b8fcf1
+  - enabled: 0
+    path: Assets/Scenes/das.unity
+    guid: cb26bce65fd2bfd4cb347619045855cc
+  - enabled: 0
+    path: Assets/Scenes/Level5.unity
+    guid: 2e28747072aa6e34691000b3bfc7886f
+  - enabled: 0
+    path: Assets/Scenes/Level6.unity
+    guid: 38ddaccbe6ff82847acab4b046c0b6a8
+  - enabled: 0
+    path: Assets/Scenes/Level7.unity
+    guid: f1b6ab6adddb4f143976af8316119eb7
+  - enabled: 0
+    path: Assets/Scenes/Level8.unity
+    guid: 14c0862a131dff449906ced30bb33e05
+  - enabled: 0
+    path: Assets/Scenes/Level9.unity
+    guid: e1f043e625186ff49b3e9f7d71c52266
+  - enabled: 1
+    path: Assets/Scenes/Level4.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   m_configObjects: {}

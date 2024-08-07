@@ -47,9 +47,13 @@ public abstract class BossHealth : MonoBehaviour, IDamageable
         }
     }
 
+    public virtual void Death()
+    {
 
+    }
 
 }
+
 
 public enum Stage
 {

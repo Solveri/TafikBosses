@@ -10,9 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7603061694326577909}
   - component: {fileID: 2383130527190297529}
-  - component: {fileID: 8891683597912266292}
-  - component: {fileID: 8158776575340506476}
   - component: {fileID: 2420752755607327807}
+  - component: {fileID: 4324636595500443528}
   m_Layer: 0
   m_Name: Ball
   m_TagString: Ball
@@ -75,19 +74,37 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: dfca99e8ae3f79945b80f7502097eeb4, type: 3}
+  m_SortingOrder: 1
+  m_Sprite: {fileID: 21300000, guid: 224910e4704cb7b4ab64666427259d79, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.64, y: 0.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!58 &8891683597912266292
+--- !u!114 &2420752755607327807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8965344251052578570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a6c68d6000acc14da009385a3e580cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 4
+  isBallHitThePaddle: 0
+  modifier: 1
+  spriteRenderer: {fileID: 2383130527190297529}
+  isActive: 0
+  isLaunched: 0
+--- !u!58 &4324636595500443528
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,48 +138,4 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.5
---- !u!50 &8158776575340506476
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8965344251052578570}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 10
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 6200000, guid: f9b1069cdd008644ea5c644678a544cb, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
---- !u!114 &2420752755607327807
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8965344251052578570}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a6c68d6000acc14da009385a3e580cd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 7
-  Paddle: {fileID: 0}
-  isBallHitThePaddle: 0
-  modifer: 1
-  isActive: 0
+  m_Radius: 0.32

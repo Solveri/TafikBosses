@@ -37,25 +37,25 @@ public class TimeKeeperAbilities : MonoBehaviour, BossAbilities
 
     private IEnumerator ChangeSpeed(BallController ball)
     {
-        float originalModifier = ball.CurrentModifer;
+        float originalModifier = ball.CurrentModifier;
         isSpeedChanged = true;
         if (isSpeedingUp)
         {
             float newModifer = originalModifier += 0.25f;
-            ball.ChangeModifer(newModifer);
+            ball.ChangeModifier(newModifer);
             Debug.Log("Speeding up the ball");
         }
         else
         {
             float newModifer = originalModifier -= 0.25f;
-            ball.ChangeModifer(newModifer);
+            ball.ChangeModifier(newModifer);
             Debug.Log("Slowing down the ball");
         }
 
         yield return new WaitForSeconds(EFFECT_DURATION);
 
         isSpeedChanged = false;
-        ball.ChangeModifer(originalModifier);
+        ball.ChangeModifier(originalModifier);
         isSpeedingUp = !isSpeedingUp; // alternate between speeding up and slowing down
 
         // Schedule the next speed change if the ability is still active

@@ -5,24 +5,39 @@ using UnityEngine;
 
 public class TimeKeeperHealth : BossHealth
 {
-   
+    public bool IsIntEvent { get { return IsIntEvent; }  }
     bool isInEvent = false;
+    
     [SerializeField] private Transform eventPoisiton;
-    List<Bricks> currentBricks = new List<Bricks>();
+    public List<Bricks> currentBricks = new List<Bricks>();
     public Bricks BrickPrefab;
     private BallController BallController;
-    bool shouldSpawn = false;
+    bool hasSpawned = false;
     BossAbilities abilities;
     
     // Start is called before the first frame update
     void Start()
     {
+
+        GameManager.instance.InitRound();
         abilities = GetComponent<TimeKeeperAbilities>();
+        
         canBeDamaged = true;
         Bricks.onDestory += Bricks_onDestory;
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (BossStage == Stage.Stage2)
+        {
+            Debug.Log("Entered Stage2");
+            canBeDamaged = false;
+            isInEvent = true;
+            
+
+           
+            
+        }
+        
         if (collision.transform.CompareTag("Ball"))
         {
             Debug.Log("Ball");
@@ -36,6 +51,11 @@ public class TimeKeeperHealth : BossHealth
             }
 
         }
+        
+    }
+    public override void Death()
+    {
+        GameManager.instance.EndRound();
     }
     private void Bricks_onDestory(Bricks bricks)
     {
@@ -45,67 +65,53 @@ public class TimeKeeperHealth : BossHealth
             currentBricks.Remove(bricks);
         }
     }
+    
 
     // Update is called once per frame
     public override void Update()
     {
-        
-        if (HitCount == 15)
+        if (isInEvent && BallController.isBallHitThePaddle)
         {
-            Destroy(this.gameObject);
+                Debug.Log("Entered Event");
+                StartEvent();
+            if (currentBricks.Count == 0)
+            {
+                isInEvent = false;
+            }
+
         }
-       switch (BossStage)
+        if (!isInEvent)
         {
-            case Stage.Stage1:
-
-                abilities.Ability();
-                break;
-            case Stage.Stage2:
-               this.canBeDamaged = false;
-                Debug.Log("Entered Stage 2 "+ this.canBeDamaged);
-                if (BallController == null)
-                {
-                    return;
-                }
-                if (!isInEvent)
-                {
-                    isInEvent = true;
-                    
-
-                }
-                if (isInEvent)
-                {
-                    if (BallController.isBallHitThePaddle && !shouldSpawn)
-                    {
-                        shouldSpawn = true;
-                        SecondStageEvent(2, 3);
-
-                    }
-                    else if (currentBricks.Count == 0)
-                    {
-                        HitCount = 10;
-                        canBeDamaged = true;
-                        isInEvent = false;
-
-                    }
-                }
-               
-                break;
-            case Stage.Stage3:
-              
-                //Abilities.Ability2();
-                break;
+            canBeDamaged = true;
         }
+
+    }
+    public void LateUpdate()
+    {
+      
     }
    
+    
 
+    private void StartEvent()
+    {
+
+        if (!hasSpawned)
+        {
+            hasSpawned = true;
+            isInEvent = true;
+            SecondStageEvent(3, 2);
+        }
+       
+    }
+    
     private void SecondStageEvent(int row,int column)
     {
         for (int i = 0; i < row; i++)
         {
             for (int j = 0; j < column; j++)
             {
-                Bricks brick = Instantiate(BrickPrefab, new Vector3(i,j,0), Quaternion.identity);
+                Bricks brick = Instantiate(BrickPrefab, new Vector3(i-1*0.7f*1.5f,(j*0.7f)*1.5f,0), Quaternion.identity);
                 currentBricks.Add(brick);
             }
         }

@@ -1,16 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    [SerializeField]BallController currentBall;
     [SerializeField] BallController ballPrefab;
     [SerializeField] GameObject endCanvas;
+    [SerializeField] PaddleScript paddlePrefab; // Reference to the paddle prefab
+    [SerializeField]bool hasRoundStarted = false;
+    public bool hasRoundFinished = false;
     public bool isGameOver = false;
-    PaddleScript currentPaddle;
-     public int numberOfBallsSpawned = 0;
+    public  PaddleScript currentPaddle;
+    public int numberOfBallsSpawned = 0;
+    public int currentLevel = 1;
+    bool hasLevelUpdated = false;
+    public BallController currentBall;
+    List<Bricks> currentBricks = new List<Bricks>();
+
     private void Awake()
     {
         if (instance != null)
@@ -21,60 +29,138 @@ public class GameManager : MonoBehaviour
         {
             instance = this;
         }
+        if (FindObjectsOfType<GameManager>().Length > 1)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            DontDestroyOnLoad(gameObject);
+        }
 
-        currentPaddle = FindObjectOfType<PaddleScript>();
-        BallController.onDestroy += SpawnNewBall;
         DontDestroyOnLoad(this);
+       
     }
-    
-    /*Need to create Restart Button
-     * Need to give 3 balls to the ball and after the player reachs the miss coliider need to Destory it and give a new one in the middle(so i need spawnPoint for the new one)
-     * need to add a list/array to hold all the extra balls and check if its empty if not and he missed one ball then spawn another one in a sec
-     * 
-     * 
-     */
-    // Start is called before the first frame update
+
     void Start()
     {
+      
+    }
+    private void OnEnable()
+    {
+        Bricks.onSpawn += RegistarBrick;
 
-        SpawnNewBall();
+        Bricks.onDestory += RemoveBrick;
+        BallController.OnDestroy += SpawnNewBall;
+        EndCanvas.OnNextLevel += UpdateLevel;
+        SceneManagerScript.OnNewScene += InitializeGame;
+        SceneManagerScript.newScene += InitializeGame;
     }
 
-    // Update is called once per frame
+    private void RegistarBrick(Bricks brick)
+    {
+        currentBricks.Add(brick);
+        if (!hasRoundStarted)
+        {
+            
+            InitRound();
+
+        }
+        
+    }
+
+
+    void UpdateLevel()
+    {
+        currentLevel++;
+    }
+    private void RemoveBrick(Bricks brick)
+    {
+        currentBricks.Remove(brick);
+        if (currentBricks.Count == 0)
+        {
+
+            EndRound();
+
+
+
+        }
+       
+    }
+
     void Update()
     {
-        
+
+       
+    }
+    private void SetEndCanvas()
+    {
+        Instantiate(endCanvas);
         
     }
-    
-    public void RestGame()
+    public void InitRound()
     {
-        SpawnNewBall();
-        BallController.onDestroy += SpawnNewBall;
+        hasRoundStarted = true;
+        hasRoundFinished = false;
+        
+        Debug.Log("Init has been called");
+       
+    }
+    public void EndRound()
+    {
+        
+           
+            hasRoundStarted = false;
+            hasRoundFinished = true;
+            
+            SetEndCanvas();
+            
+
+        
+
+     
+    }
+    public void InitializeGame()
+    {
+       
         numberOfBallsSpawned = 0;
+        StartCoroutine(BallDelaySpawn());
+       
+        
+        // Check if the paddle is already instantiated
         if (currentPaddle == null)
         {
-            currentPaddle = FindObjectOfType<PaddleScript>();
-            
+            currentPaddle = Instantiate(paddlePrefab);
         }
+
+        
     }
-   
+    private IEnumerator BallDelaySpawn()
+    {
+        yield return new WaitForSeconds(2f);
+        Debug.Log("Heyo");
+        SpawnNewBall();
+    }
+
     private void SpawnNewBall()
     {
-        
-        if (numberOfBallsSpawned <3)
+        if (hasRoundFinished)
+        {
+            return;
+        }
+        if (numberOfBallsSpawned < 3)
         {
             numberOfBallsSpawned++;
             currentPaddle.SpawnBallInSpawnPoint(ballPrefab);
         }
         else
         {
-            endCanvas.SetActive(true);
-            BallController.onDestroy -= SpawnNewBall;
             
+            EndRound();
             
+           
         }
-       
         
+       
     }
 }
