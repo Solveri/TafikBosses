@@ -98,9 +98,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a6c68d6000acc14da009385a3e580cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 4
+  speed: 5
   isBallHitThePaddle: 0
   modifier: 1
+  AmountOfHits: 0
   spriteRenderer: {fileID: 2383130527190297529}
   isActive: 0
   isLaunched: 0

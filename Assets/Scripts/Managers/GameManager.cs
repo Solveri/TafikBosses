@@ -15,7 +15,8 @@ public class GameManager : MonoBehaviour
     public  PaddleScript currentPaddle;
     public int numberOfBallsSpawned = 0;
     public int currentLevel = 1;
-    bool hasLevelUpdated = false;
+    public bool isFightingBoss = false;
+    public bool hasBeatenBoss = false;
     public BallController currentBall;
     List<Bricks> currentBricks = new List<Bricks>();
 
@@ -80,7 +81,14 @@ public class GameManager : MonoBehaviour
         if (currentBricks.Count == 0)
         {
 
+            if (isFightingBoss)
+            {
+                return;
+            }
+            else
+            {
             EndRound();
+            }
 
 
 
@@ -102,23 +110,17 @@ public class GameManager : MonoBehaviour
     {
         hasRoundStarted = true;
         hasRoundFinished = false;
+        isGameOver = false;
         
         Debug.Log("Init has been called");
        
     }
     public void EndRound()
     {
+        hasRoundStarted = false;
+        hasRoundFinished = true;
         
-           
-            hasRoundStarted = false;
-            hasRoundFinished = true;
-            
-            SetEndCanvas();
-            
-
-        
-
-     
+        SetEndCanvas();
     }
     public void InitializeGame()
     {
@@ -155,7 +157,8 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            
+
+            isGameOver = true;
             EndRound();
             
            

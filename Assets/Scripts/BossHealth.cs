@@ -14,14 +14,20 @@ public abstract class BossHealth : MonoBehaviour, IDamageable
     public virtual int HitCount { get; protected set; }
     
     public static Action onHit;
-    public void TakeDamage(float damage)
+    public static Action onEvent;
+    public virtual void Start()
+    {
+        GameManager.instance.isFightingBoss = true;
+    }
+    public virtual void TakeDamage(float damage)
     {
         if (canBeDamaged)
         {
-            onHit?.Invoke();
             HitCount += (int)damage;
+            ChangeState();
             Debug.Log(HitCount);
-            changeState();
+            onHit?.Invoke();
+
         }
         
     }
@@ -30,7 +36,7 @@ public abstract class BossHealth : MonoBehaviour, IDamageable
         
         
     }
-    void changeState()
+    public virtual void ChangeState()
     {
         if (HitCount >= 0 && HitCount <5)
         {

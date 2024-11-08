@@ -8,6 +8,7 @@ public class Bricks : MonoBehaviour
     [SerializeField] BrickType brickType;
     public bool isHit = false;
     public bool isHitTwice = false;
+    public bool isDestroyed = false;
     [SerializeField] List<BrickScriptable> chooseableBricks = new List<BrickScriptable>();
     [SerializeField] List<Material> aviableColors = new List<Material>();
     BrickScriptable choosenBrick;
@@ -46,16 +47,19 @@ public class Bricks : MonoBehaviour
             {
                 case BrickType.Normal:
                 isHit = true;
+                isDestroyed = true;
                 AnimateBrickDestroy(gameObject, 1f);
                     break;
                 case BrickType.DoubleHit:
                     if (!isHit)
                     {
-                        isHitTwice= true;
+                        isHit = true;
                         AnimateBrickHit(gameObject, 0.8f);
                     }
                     else
                     {
+                        isHitTwice = true;
+                    isDestroyed = true;
                         AnimateBrickDestroy(gameObject, 1f);
                     }
                     break;

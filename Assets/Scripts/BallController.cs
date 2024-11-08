@@ -7,7 +7,7 @@ public class BallController : MonoBehaviour, IAttackable
 {
     public float speed = 10f; // Speed of the ball
     private Vector2 direction = Vector2.up; // Initial direction
-
+    [SerializeField] Camera gameCam;
     bool isBallHitTheMiddle = false;
     bool isBallHitTheSide = false;
     public bool isBallHitThePaddle = false;
@@ -17,17 +17,25 @@ public class BallController : MonoBehaviour, IAttackable
     [SerializeField]SpriteRenderer spriteRenderer;
     Color originalColor;
     public bool IsUnstoppable { get { return isUnstoppable; } }
-    float maxSpeed { get => initSpeed * 1.5f; }
+    float maxSpeed { get => initSpeed * 1.75f; }
     float maxModifier { get => modifier * 1.5f; }
     float minModifier { get => modifier * 0.5f; }
     float minSpeed { get => initSpeed * 0.75f; }
     public static event System.Action OnDestroy;
     public bool isActive;
+    private bool hasHitSomething = false;
     public float CurrentModifier { get { return modifier; } }
     private bool isUnstoppable = false;
     public bool isLaunched;
-   
 
+    private void Awake()
+    {
+        if (gameCam == null)
+        {
+            gameCam = Camera.main;
+        }
+      
+    }
     private void Start()
     {
         initSpeed = speed;
@@ -98,7 +106,11 @@ public class BallController : MonoBehaviour, IAttackable
             Debug.Log("Ball is no longer unstoppable");
         }
     }
-    
+
+    private void FixedUpdate()
+    {
+        
+    }
 
     private void CheckCollisions()
     {
@@ -115,8 +127,11 @@ public class BallController : MonoBehaviour, IAttackable
     private void CheckWallCollisions()
     {
         // Assuming the walls are at x = -screenWidth/2, x = screenWidth/2, y = -screenHeight/2, y = screenHeight/2
-        float screenWidth = Camera.main.orthographicSize * Camera.main.aspect * 2;
-        float screenHeight = Camera.main.orthographicSize * 2;
+        //float screenWidth = Camera.main.orthographicSize * Camera.main.aspect * 2;
+        //float screenHeight = Camera.main.orthographicSize * 2;
+
+        float screenWidth = gameCam.orthographicSize * Camera.main.aspect * 2;
+        float screenHeight = gameCam.orthographicSize * 2;
 
         if (transform.position.x <= -screenWidth / 2 || transform.position.x >= screenWidth / 2)
         {
@@ -162,6 +177,7 @@ public class BallController : MonoBehaviour, IAttackable
         {
             if (hit.CompareTag("Paddle"))
             {
+                
                 isBallHitThePaddle = true;
                 HandlePaddleCollision(hit);
                 AmountOfHits = 0;
@@ -174,15 +190,37 @@ public class BallController : MonoBehaviour, IAttackable
                 AmountOfHits = 0;
                 HandleBrickCollision(hit);
             }
+            else if (hit.CompareTag("Boss"))
+            {
+
+                HandleBossColision(hit);
+            }
             else
             {
                 isBallHitThePaddle = false;
-                
+
             }
         }
     }
-
-   
+    private IEnumerator NextFrame(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        hasHitSomething = false;
+    }
+   private void HandleBossColision(Collider2D collider2D)
+    {
+        //need to make it so it only hit once   
+        //hasHitSomething might casue bug  
+        if (collider2D.TryGetComponent(out BossHealth boss) && !hasHitSomething)
+        {
+            hasHitSomething = true;
+            boss.TakeDamage(1);
+            Vector2 normal = (transform.position - collider2D.transform.position).normalized;
+            direction = Vector2.Reflect(direction, normal);
+            StartCoroutine(NextFrame(0.5f));
+        }
+        
+    }
     private void HandlePaddleCollision(Collider2D collider)
     {
         Vector2 paddlePosition = collider.transform.position; // Get the paddle's position
@@ -206,13 +244,13 @@ public class BallController : MonoBehaviour, IAttackable
         else if (hitPosition > 0.40f)
         {
             // Ball hits the right side of the paddle (0 to 45 degrees)
-            angle = (hitPosition - 0.33f) * 80;
+            angle = (hitPosition - 0.33f) * 45;
             isBallHitTheSide = true;
         }
         else
         {
             // Ball hits the middle part of the paddle (90 degrees)
-            angle = 90;
+            angle = 80;
             isBallHitTheMiddle = true;
         }
 
@@ -223,37 +261,48 @@ public class BallController : MonoBehaviour, IAttackable
         ChangeSpeed();
     }
     
+    private void ChangeBallDirectionOnHit(Transform colider,Bricks brick)
+    {
+        Vector2 normal = (transform.position - colider.transform.position).normalized;
+        direction = Vector2.Reflect(direction, normal);
+        brick.BrickHit();
+        hasHitSomething = true;
+        StartCoroutine(NextFrame(0.1f));
+
+    }
     private void HandleBrickCollision(Collider2D collider)
     {
+
         Bricks brick = collider.gameObject.GetComponent<Bricks>();
-        if (!brick.isHit && !isUnstoppable)
-        {
-            Vector2 normal = (transform.position - collider.transform.position).normalized;
-            direction = Vector2.Reflect(direction, normal);
-        }
         if (isUnstoppable)
         {
             brick.BrickHit();
             return; // Ignore collisions if the ball is unstoppable
         }
-        else
+        
+        if (!brick.isHit && !isUnstoppable&& !hasHitSomething)
         {
-            brick.BrickHit();
+
+            ChangeBallDirectionOnHit(collider.transform,brick);
+            
+           
+        }
+         else if (!brick.isHitTwice && !brick.isDestroyed && !isUnstoppable && !hasHitSomething)
+        {
+            ChangeBallDirectionOnHit(collider.transform, brick);
+            Debug.Log("Second Hit");
+
+
+
         }
 
-
-      
-        // Reflect the ball's velocity
-       
-
-        
-        
     }
 
     private void DestroyBall()
+
     {
-        OnDestroy.Invoke();
         Destroy(this.gameObject);
+        OnDestroy.Invoke();
     }
 
     public void Attack(IDamageable target)

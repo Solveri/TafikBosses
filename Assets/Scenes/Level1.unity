@@ -607,18 +607,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PauseMenu
       objectReference: {fileID: 0}
-    - target: {fileID: 943074968166489712, guid: 3f7f2db5b6be0f349b15ab04cb772f40, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2211640756011696803, guid: 3f7f2db5b6be0f349b15ab04cb772f40, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 142.44446
-      objectReference: {fileID: 0}
-    - target: {fileID: 2211640756011696803, guid: 3f7f2db5b6be0f349b15ab04cb772f40, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -44.444336
-      objectReference: {fileID: 0}
     - target: {fileID: 8083118012320538384, guid: 3f7f2db5b6be0f349b15ab04cb772f40, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -698,10 +686,6 @@ PrefabInstance:
     - target: {fileID: 8083118012320538384, guid: 3f7f2db5b6be0f349b15ab04cb772f40, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8628525406070798876, guid: 3f7f2db5b6be0f349b15ab04cb772f40, type: 3}
-      propertyPath: m_UiScaleMode
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
