@@ -17,10 +17,10 @@ public class BallController : MonoBehaviour, IAttackable
     [SerializeField]SpriteRenderer spriteRenderer;
     Color originalColor;
     public bool IsUnstoppable { get { return isUnstoppable; } }
-    float maxSpeed { get => initSpeed * 1.75f; }
+    public float maxSpeed { get => initSpeed * 1.75f; }
     float maxModifier { get => modifier * 1.5f; }
     float minModifier { get => modifier * 0.5f; }
-    float minSpeed { get => initSpeed * 0.75f; }
+    public float minSpeed { get => initSpeed * 0.75f;}
     public static event System.Action OnDestroy;
     public bool isActive;
     private bool hasHitSomething = false;

@@ -8,7 +8,8 @@ public class Ability : MonoBehaviour,IAbility
     public BallController ball { get; protected set; } 
     public float duration { get; protected set; }
     public bool onCooldown { get; protected set; }
-    public float Cooldown { get; protected set; }
+    public float CurrentCooldown { get; protected set; }
+    public float MaxCooldown { get; protected set; }
 
     public virtual void Activate()
     {
@@ -24,5 +25,10 @@ public class Ability : MonoBehaviour,IAbility
     void Update()
     {
         
+    }
+
+    public float GetCooldownProgress()
+    {
+        return (CurrentCooldown / MaxCooldown); // Returns a value from 0 to 1
     }
 }

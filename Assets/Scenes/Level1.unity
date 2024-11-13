@@ -1222,9 +1222,33 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2812209775331106267, guid: a4abe6cb4d7af9d42b7517128ace7f2c, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2812209775331106267, guid: a4abe6cb4d7af9d42b7517128ace7f2c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2812209775331106267, guid: a4abe6cb4d7af9d42b7517128ace7f2c, type: 3}
+      propertyPath: m_SortingOrder
+      value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2812209775331106267, guid: a4abe6cb4d7af9d42b7517128ace7f2c, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5136199400557498551, guid: a4abe6cb4d7af9d42b7517128ace7f2c, type: 3}
       propertyPath: m_Name
       value: BackGround
+      objectReference: {fileID: 0}
+    - target: {fileID: 5136199400557498551, guid: a4abe6cb4d7af9d42b7517128ace7f2c, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5136199400557498551, guid: a4abe6cb4d7af9d42b7517128ace7f2c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
