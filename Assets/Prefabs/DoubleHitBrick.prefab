@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6118028981879247568}
   - component: {fileID: 2120858479309309297}
-  - component: {fileID: 4854776959644947515}
   - component: {fileID: -3281548004658792494}
   - component: {fileID: 4673624652699195464}
   m_Layer: 0
@@ -87,33 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!50 &4854776959644947515
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6394936521334791525}
-  m_BodyType: 2
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 0.0001
-  m_LinearDrag: 0
-  m_AngularDrag: 0
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 1
-  m_Constraints: 3
 --- !u!114 &-3281548004658792494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -129,6 +101,7 @@ MonoBehaviour:
   brickType: 1
   isHit: 0
   isHitTwice: 0
+  isDestroyed: 0
   chooseableBricks:
   - {fileID: 11400000, guid: 957792348eaffb046944b0f59072e944, type: 2}
   - {fileID: 11400000, guid: 3d5b0ae8c20ab9549bf1e47b850cfd8c, type: 2}

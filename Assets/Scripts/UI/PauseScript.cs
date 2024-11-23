@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEditor.SearchService;
 
 public class PauseScript : MonoBehaviour
 {
@@ -27,5 +28,12 @@ public class PauseScript : MonoBehaviour
     {
         Time.timeScale = 1;
         //UnPaused.Invoke();
+    }
+
+    public void ResetLevel()
+    {
+        SceneManagerScript.instance.LoadNewScene("Level"+GameManager.instance.currentLevel);
+        GameManager.instance.InitializeGame();
+        
     }
 }

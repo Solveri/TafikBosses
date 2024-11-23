@@ -12,6 +12,7 @@ public class TimeKeeperAnimaton : MonoBehaviour
         BossHealth.onHit += playOnHit;
         TimeKeeperHealth.onEventEnd += stopAnimation;
         BossHealth.onEvent += playOnEvent;
+        
     }
     private void Start()
     {

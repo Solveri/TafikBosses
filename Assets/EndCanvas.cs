@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 public class EndCanvas : MonoBehaviour
 {
     public static Action OnNextLevel;
-    public static Action OnResetScene;
+    
     [SerializeField] GameObject nextLevelButton;
     [SerializeField] GameObject winningPanel;
     [SerializeField] GameObject losingPanel;
@@ -44,7 +44,7 @@ public class EndCanvas : MonoBehaviour
     public void ResetScene()
     {
         SceneManagerScript.instance.ResetScene();
-        OnResetScene.Invoke();
+       
         
 
 

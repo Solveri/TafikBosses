@@ -6,21 +6,21 @@ using UnityEngine;
 
 public class TimeKeeperHealth : BossHealth
 {
-    public bool IsIntEvent { get { return isInEvent; }  }
-    bool isInEvent = false;
+   
+    
     
     [SerializeField] private Transform eventPoisiton;
     public List<Bricks> currentBricks = new List<Bricks>();
     [SerializeField] Sprite bossAbi;
-    SpriteRenderer sr;
+
     public Bricks BrickPrefab;
     private BallController BallController;
     bool hasSpawned = false;
     BossAbilities abilities;
-    public static Action onEventEnd;
+    //public static Action onEventEnd;
     private void OnEnable()
     {
-        onHit += ChangeState;
+       
     }
 
     // Start is called before the first frame update
@@ -31,22 +31,12 @@ public class TimeKeeperHealth : BossHealth
        
         abilities = GetComponent<TimeKeeperAbilities>();
         
-        canBeDamaged = true;
+     
         Bricks.onDestory += Bricks_onDestory;
-        onHit += On_Hit;
+        onEvent += StartEvent;
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (BossStage == Stage.Stage2)
-        {
-            Debug.Log("Entered Stage2");
-            canBeDamaged = false;
-            isInEvent = true;
-
-
-
-
-        }
 
        
     }
@@ -63,11 +53,11 @@ public class TimeKeeperHealth : BossHealth
             currentBricks.Remove(bricks);
             if (currentBricks.Count == 0)
             {
-                isInEvent = false;
-                if (!isInEvent)
+                IsInEvent = false;
+                if (!IsInEvent)
                 {
                     onEventEnd.Invoke();
-                    canBeDamaged = true;
+                    CanBeDamaged = true;
                     TakeDamage(5);
                 }
             }
@@ -79,41 +69,26 @@ public class TimeKeeperHealth : BossHealth
     public override void Update()
     {
 
-        if (HitCount >=15)
+        if (HitCount >= 15)
         {
             Death();
         }
         
 
     }
-    private void On_Hit()
-    {
-       
-        if (BossStage == Stage.Stage2 )
-        {
-            Debug.Log("Entered Event");
-            StartEvent();
-
-
-        }
-    }
-    public void LateUpdate()
-    {
-      
-    }
-  
     
+   
    
     private void StartEvent()
     {
 
         if (!hasSpawned)
         {
-            canBeDamaged = false;
+            
             hasSpawned = true;
-            isInEvent = true;
+            IsInEvent = true;
             SecondStageEvent(3, 2);
-            onEvent.Invoke();
+            
         }
        
     }

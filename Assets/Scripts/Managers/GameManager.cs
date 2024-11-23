@@ -42,11 +42,6 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this);
        
     }
-
-    void Start()
-    {
-      
-    }
     private void OnEnable()
     {
         Bricks.onSpawn += RegistarBrick;
@@ -55,7 +50,10 @@ public class GameManager : MonoBehaviour
         BallController.OnDestroy += SpawnNewBall;
         EndCanvas.OnNextLevel += UpdateLevel;
         SceneManagerScript.OnNewScene += InitializeGame;
-        SceneManagerScript.newScene += InitializeGame;
+        SceneManagerScript.OnRestScene+= SpawnNewBall;
+        
+       
+        
     }
 
     private void RegistarBrick(Bricks brick)
@@ -69,6 +67,7 @@ public class GameManager : MonoBehaviour
         }
         
     }
+
 
 
     void UpdateLevel()
@@ -111,7 +110,7 @@ public class GameManager : MonoBehaviour
         hasRoundStarted = true;
         hasRoundFinished = false;
         isGameOver = false;
-        
+
         Debug.Log("Init has been called");
        
     }
@@ -122,10 +121,12 @@ public class GameManager : MonoBehaviour
         
         SetEndCanvas();
     }
+  
     public void InitializeGame()
     {
        
         numberOfBallsSpawned = 0;
+  
         StartCoroutine(BallDelaySpawn());
        
         
@@ -134,22 +135,26 @@ public class GameManager : MonoBehaviour
         {
             currentPaddle = Instantiate(paddlePrefab);
         }
-
         
+
+
     }
     private IEnumerator BallDelaySpawn()
     {
+       
         yield return new WaitForSeconds(2f);
-        Debug.Log("Heyo");
+        Debug.Log("Heyo2");
         SpawnNewBall();
     }
 
     private void SpawnNewBall()
     {
+        Debug.Log("Spawned Ball");
         if (hasRoundFinished)
         {
             return;
         }
+        
         if (numberOfBallsSpawned < 3)
         {
             numberOfBallsSpawned++;
@@ -166,4 +171,6 @@ public class GameManager : MonoBehaviour
         
        
     }
+
+
 }

@@ -10,6 +10,7 @@ public class UnstoppableBall : Ability
     {
         MaxCooldown = 8; // Set maximum cooldown time in seconds
         duration = 3; // Set ability duration in seconds
+      isUnstoppable = false;
     }
 
     private void OnEnable()

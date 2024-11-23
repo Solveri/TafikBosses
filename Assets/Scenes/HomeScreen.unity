@@ -3078,7 +3078,7 @@ PrefabInstance:
       objectReference: {fileID: 943074968166489712, guid: be7ecefc2a31e9743b471e483fd7d0a8, type: 3}
     - target: {fileID: 917678682613972818, guid: d35d124c4047c414dbefbf17b4d2fd8e, type: 3}
       propertyPath: currentLevel
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 917678682613972818, guid: d35d124c4047c414dbefbf17b4d2fd8e, type: 3}
       propertyPath: paddlePrefab

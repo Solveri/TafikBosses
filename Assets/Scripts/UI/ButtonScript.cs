@@ -18,7 +18,7 @@ public class ButtonScript : MonoBehaviour
     }
     private void LoadNewScene()
     {
-        SceneManagerScript.instance.LoadNewScene(SceneName);
+        SceneManagerScript.instance.LoadHomeScene();
     }
     
 

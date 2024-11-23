@@ -17,7 +17,7 @@ public class BallController : MonoBehaviour, IAttackable
     [SerializeField]SpriteRenderer spriteRenderer;
     Color originalColor;
     public bool IsUnstoppable { get { return isUnstoppable; } }
-    public float maxSpeed { get => initSpeed * 1.75f; }
+    public float maxSpeed { get => initSpeed * 1.50f; }
     float maxModifier { get => modifier * 1.5f; }
     float minModifier { get => modifier * 0.5f; }
     public float minSpeed { get => initSpeed * 0.75f;}
@@ -172,7 +172,7 @@ public class BallController : MonoBehaviour, IAttackable
     {
        
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position,0.15f);
-
+        
         foreach (var hit in hits)
         {
             if (hit.CompareTag("Paddle"))
@@ -266,35 +266,53 @@ public class BallController : MonoBehaviour, IAttackable
         Vector2 normal = (transform.position - colider.transform.position).normalized;
         direction = Vector2.Reflect(direction, normal);
         brick.BrickHit();
-        hasHitSomething = true;
-        StartCoroutine(NextFrame(0.1f));
+        //hasHitSomething = true;
+        //StartCoroutine(NextFrame(0.1f));
 
     }
     private void HandleBrickCollision(Collider2D collider)
     {
-
+        float distance = Vector2.Distance(this.gameObject.transform.position, collider.transform.position);
         Bricks brick = collider.gameObject.GetComponent<Bricks>();
         if (isUnstoppable)
         {
             brick.BrickHit();
             return; // Ignore collisions if the ball is unstoppable
         }
-        
-        if (!brick.isHit && !isUnstoppable&& !hasHitSomething)
+      
+        if (distance <0.5f)
         {
+            brick.isHit = true;
 
-            ChangeBallDirectionOnHit(collider.transform,brick);
+            if (brick.hasBeenHitOnce && brick.isHit && !brick.isHitTwice)
+            {
+                Debug.Log("Hit Twice");
+                ChangeBallDirectionOnHit(collider.transform, brick);
+            }
+            else if (brick.isHit && !brick.hasBeenHitOnce)
+            {
+            ChangeBallDirectionOnHit(collider.transform, brick);
+                
+            }
             
            
+            
+            
         }
-         else if (!brick.isHitTwice && !brick.isDestroyed && !isUnstoppable && !hasHitSomething)
-        {
-            ChangeBallDirectionOnHit(collider.transform, brick);
-            Debug.Log("Second Hit");
-
-
-
+        else if(brick.isHit && distance >1f){
+         
+            brick.isHit = false;
         }
+
+
+
+        //if (!brick.isHitTwice && !brick.isDestroyed && !isUnstoppable)
+        //{
+        //    ChangeBallDirectionOnHit(collider.transform, brick);
+
+
+
+        //}
 
     }
 

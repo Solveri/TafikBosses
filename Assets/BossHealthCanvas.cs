@@ -14,12 +14,16 @@ public class BossHealthCanvas : MonoBehaviour
     [SerializeField] List<GameObject> hearts = new List<GameObject>();
     private void Awake()
     {
-        
+       
     }
     // Start is called before the first frame update
     void Start()
     {
         BossHealth.onHit += OnBossHit;
+        crystalAmount = crystalHealth;
+        Bricks.onDestory += CrystalUpdate;
+        BossHealth.onEventEnd += OnEventEnd;
+
     }
     //Crystal Logic
     /*when the event starts i need to keep track of the blocks
@@ -29,26 +33,41 @@ public class BossHealthCanvas : MonoBehaviour
      */
     private void OnBossHit()
     {
-        if (!bossHealth.IsIntEvent && hearts.Count > 0)
+        if (bossHealth.BossStage != Stage.Stage2)
         {
-            hearts[0].SetActive(false);
-            hearts.RemoveAt(0);
+            if (hearts.Count >= 0 && bossHealth.CanBeDamaged)
+            {
+                Debug.Log("Removing Heart");
+                hearts[0].SetActive(false);
+                hearts.RemoveAt(0);
+            }
         }
+        
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        if (bossHealth.currentBricks.Count >0)
+        
+
+
+    }
+    private void OnEventEnd()
+    {
+        crystal.fillAmount = 0;
+    }
+    private void CrystalUpdate(Bricks brick)
+    {
+        if (bossHealth.currentBricks.Count > 0)
         {
             crystalAmount = (float)bossHealth.currentBricks.Count / (float)crystalHealth;
             crystal.fillAmount = crystalAmount;
         }
-        else
-        {
-            crystal.fillAmount = 0;
-        }
-       
+        
+      
+
+
     }
+
 }

@@ -7,6 +7,7 @@ public class Bricks : MonoBehaviour
 {
     [SerializeField] BrickType brickType;
     public bool isHit = false;
+    public bool hasBeenHitOnce = false;
     public bool isHitTwice = false;
     public bool isDestroyed = false;
     [SerializeField] List<BrickScriptable> chooseableBricks = new List<BrickScriptable>();
@@ -35,6 +36,11 @@ public class Bricks : MonoBehaviour
         
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Entered Coliision");
+    }
+
     public void BrickHit()
     {
        
@@ -51,15 +57,15 @@ public class Bricks : MonoBehaviour
                 AnimateBrickDestroy(gameObject, 1f);
                     break;
                 case BrickType.DoubleHit:
-                    if (!isHit)
+                    if (!hasBeenHitOnce)
                     {
-                        isHit = true;
+                        hasBeenHitOnce = true;
                         AnimateBrickHit(gameObject, 0.8f);
                     }
                     else
                     {
                         isHitTwice = true;
-                    isDestroyed = true;
+                        isDestroyed = true;
                         AnimateBrickDestroy(gameObject, 1f);
                     }
                     break;
