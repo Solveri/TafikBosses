@@ -68,7 +68,7 @@ public class BallController : MonoBehaviour, IAttackable
         if (AmountOfHits >= 5)
         {
             AmountOfHits = 0;
-            DirectBallToPaddle();
+            //DirectBallToPaddle();
         }
     }
    
@@ -126,41 +126,53 @@ public class BallController : MonoBehaviour, IAttackable
 
     private void CheckWallCollisions()
     {
-        // Assuming the walls are at x = -screenWidth/2, x = screenWidth/2, y = -screenHeight/2, y = screenHeight/2
-        //float screenWidth = Camera.main.orthographicSize * Camera.main.aspect * 2;
-        //float screenHeight = Camera.main.orthographicSize * 2;
+        float halfScreenWidth = gameCam.orthographicSize * Camera.main.aspect;
+        float halfScreenHeight = gameCam.orthographicSize;
+        float minAngle = 15f; // Minimum angle in degrees to prevent repetitive bouncing
 
-        float screenWidth = gameCam.orthographicSize * Camera.main.aspect * 2;
-        float screenHeight = gameCam.orthographicSize * 2;
-
-        if (transform.position.x <= -screenWidth / 2 || transform.position.x >= screenWidth / 2)
+        if (transform.position.x <= -halfScreenWidth || transform.position.x >= halfScreenWidth)
         {
-            direction.x = -direction.x; // Reflect direction horizontally
+            direction.x = -direction.x; // Reflect horizontally
+            AdjustDirection(minAngle);
             transform.position = new Vector3(
-                Mathf.Clamp(transform.position.x, -screenWidth / 2, screenWidth / 2),
+                Mathf.Clamp(transform.position.x, -halfScreenWidth, halfScreenWidth),
                 transform.position.y,
                 transform.position.z
             );
             AmountOfHits++;
-
         }
 
-        if (transform.position.y >= screenHeight / 2)
+        if (transform.position.y >= halfScreenHeight)
         {
-            direction.y = -direction.y; // Reflect direction vertically
+            direction.y = -direction.y; // Reflect vertically
+            AdjustDirection(minAngle);
             transform.position = new Vector3(
                 transform.position.x,
-                Mathf.Clamp(transform.position.y, -screenHeight / 2, screenHeight / 2),
+                Mathf.Clamp(transform.position.y, -halfScreenHeight, halfScreenHeight),
                 transform.position.z
             );
             AmountOfHits++;
         }
 
-        if (transform.position.y <= -screenHeight / 2)
+        if (transform.position.y <= -halfScreenHeight)
         {
-            // Ball missed, handle accordingly
             DestroyBall();
         }
+    }
+
+    private void AdjustDirection(float minAngle)
+    {
+        float minRadians = Mathf.Deg2Rad * minAngle; // Convert angle to radians
+        if (Mathf.Abs(Mathf.Atan2(direction.y, direction.x)) < minRadians)
+        {
+            direction.y += Mathf.Sign(direction.y) * Mathf.Tan(minRadians);
+        }
+        else if (Mathf.Abs(Mathf.Atan2(direction.x, direction.y)) < minRadians)
+        {
+            direction.x += Mathf.Sign(direction.x) * Mathf.Tan(minRadians);
+        }
+
+        direction = direction.normalized; // Keep the direction normalized
     }
 
     private void OnDrawGizmos()
@@ -279,8 +291,8 @@ public class BallController : MonoBehaviour, IAttackable
             brick.BrickHit();
             return; // Ignore collisions if the ball is unstoppable
         }
-      
-        if (distance <0.5f)
+
+        if (distance < 0.4f && !brick.isHit)
         {
             brick.isHit = true;
 
@@ -291,18 +303,21 @@ public class BallController : MonoBehaviour, IAttackable
             }
             else if (brick.isHit && !brick.hasBeenHitOnce)
             {
-            ChangeBallDirectionOnHit(collider.transform, brick);
-                
+                ChangeBallDirectionOnHit(collider.transform, brick);
+
             }
-            
-           
-            
-            
+
+
+
+
         }
-        else if(brick.isHit && distance >1f){
-         
+        else if (brick.isHit && distance >= 0.3f){
             brick.isHit = false;
+
         }
+           
+         
+        
 
 
 

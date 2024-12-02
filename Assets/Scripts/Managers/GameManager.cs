@@ -6,9 +6,9 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    [SerializeField] BallController ballPrefab;
+    public BallController ballPrefab;
     [SerializeField] GameObject endCanvas;
-    [SerializeField] PaddleScript paddlePrefab; // Reference to the paddle prefab
+    public PaddleScript paddlePrefab; // Reference to the paddle prefab
     [SerializeField]bool hasRoundStarted = false;
     public bool hasRoundFinished = false;
     public bool isGameOver = false;
